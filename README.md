@@ -1,6 +1,6 @@
 # OrderBee Client
 
-Open integration layer for [OrderBee](https://orderbee-backend.vercel.app/) — the AI agent skill that orders from local businesses (restaurants, cafés, pharmacies, dispensaries, corner stores) with live catalogs, real prices, saved-card checkout, and courier delivery or pickup.
+Open integration layer for [OrderBee](https://orderbee.app/) — the AI agent skill that orders from local businesses (restaurants, cafés, pharmacies, dispensaries, corner stores) with live catalogs, real prices, saved-card checkout, and courier delivery or pickup.
 
 This repository holds the **public, safe-to-fork parts**: the agent skill and (over time) SDKs, a webhook verifier, an embeddable booking widget, and calendar/import adapters. The OrderBee marketplace core — backend API, Stripe Connect, payouts, dispute and fraud handling, POS/courier adapters, and the merchant dashboard — is **closed** and not in this repo.
 
@@ -40,14 +40,14 @@ npx degit stuartxu2/orderbee-client/skills/orderbee ~/.hermes/skills/orderbee
 Or use the hosted cross-agent installer (auto-detects your agents):
 
 ```bash
-curl -fsSL https://orderbee-backend.vercel.app/install.sh | sh
+curl -fsSL https://orderbee.app/install.sh | sh
 ```
 
 Then set the environment and ask your agent to order:
 
 ```bash
-export ORDERBEE_BASE_URL=https://orderbee-backend.vercel.app
-export ORDERBEE_API_KEY=...   # get a key at https://orderbee-backend.vercel.app
+export ORDERBEE_BASE_URL=https://orderbee.app
+export ORDERBEE_API_KEY=...   # get a key at https://orderbee.app
 ```
 
 ## Status
