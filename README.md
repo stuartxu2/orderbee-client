@@ -50,6 +50,10 @@ export ORDERBEE_BASE_URL=https://orderbee.app
 export ORDERBEE_API_KEY=...   # get a key at https://orderbee.app
 ```
 
+## Pricing
+
+OrderBee is free to use. The small convenience fee on each order covers server costs, API tokens, and platform operations — nothing more. No profit margin.
+
 ## Status
 
 OrderBee is a sandbox MVP — payments run in Stripe test mode, so no real money is charged.
