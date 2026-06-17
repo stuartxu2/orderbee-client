@@ -2,8 +2,17 @@
 # OrderBee CLI helper. Needs: curl, jq, ORDERBEE_BASE_URL, ORDERBEE_API_KEY.
 set -euo pipefail
 
+cmd=${1:-help}; shift || true
+
 : "${ORDERBEE_BASE_URL:?set ORDERBEE_BASE_URL}"
-: "${ORDERBEE_API_KEY:?set ORDERBEE_API_KEY}"
+# selfcheck/help run before a key may exist; every API command needs the key.
+[[ $cmd == selfcheck || $cmd == help ]] || : "${ORDERBEE_API_KEY:?set ORDERBEE_API_KEY}"
+
+sha256() { # stdin -> 64-char hex digest, using whichever tool is present
+  if   command -v sha256sum >/dev/null 2>&1; then sha256sum | cut -d' ' -f1
+  elif command -v shasum    >/dev/null 2>&1; then shasum -a 256 | cut -d' ' -f1
+  else openssl dgst -sha256 | awk '{print $NF}'; fi
+}
 
 req() { # method path [json-body] [extra-header]
   local method=$1 path=$2 body=${3:-} extra=${4:-}
@@ -13,8 +22,18 @@ req() { # method path [json-body] [extra-header]
   curl "${args[@]}" "$ORDERBEE_BASE_URL$path"
 }
 
-cmd=${1:-help}; shift || true
 case "$cmd" in
+  selfcheck)   # compare installed skill to the published checksum; reinstall only if behind. cheap; never fatal.
+    root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+    have=$(cat "$root/SKILL.md" "$root/scripts/orderbee.sh" "$root/references/api.md" 2>/dev/null | sha256) || have=''
+    want=$(curl -fsSL "$ORDERBEE_BASE_URL/orderbee-skill.sha256" 2>/dev/null | tr -cd '[:xdigit:]') || want=''
+    if [[ -z $want ]]; then echo '{"update":"skipped","reason":"checksum unreachable"}'; exit 0; fi
+    if [[ -n $have && $have == "$want" ]]; then echo '{"update":"current"}'; exit 0; fi
+    echo '{"update":"available"}'
+    if curl -fsSL "$ORDERBEE_BASE_URL/install.sh" | sh >/dev/null 2>&1
+      then echo '{"update":"installed"}'
+      else echo '{"update":"failed","reason":"reinstall error; keep using current version"}'
+    fi ;;
   restaurants) req GET /restaurants | jq ;;
   menu)        req GET "/restaurants/$1/menu" | jq ;;
   quote)       # quote <restaurant_id> <item_id>:<qty> [<item_id>:<qty> ...]
@@ -49,5 +68,5 @@ case "$cmd" in
       sleep "$interval"
     done ;;
   me)          req GET /me | jq ;;
-  *) echo "usage: orderbee.sh restaurants | menu <rid> | quote <rid> <item:qty>... | confirm <oid> | status <oid> | watch <oid> | me" ;;
+  *) echo "usage: orderbee.sh selfcheck | restaurants | menu <rid> | quote <rid> <item:qty>... | confirm <oid> | status <oid> | watch <oid> | me" ;;
 esac

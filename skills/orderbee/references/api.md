@@ -51,3 +51,7 @@ Pre-pickup only. 200 canceled order with `"refunded": true|false|null` (null = n
 ## POST /orders/:id/pickup
 Pickup orders only. Customer confirms they collected the order: `ready_for_pickup → picked_up`.
 200 order (state `picked_up`; replay after pickup also 200) | 409 `not_ready` (not yet `ready_for_pickup`) | 409 `not_a_pickup_order` | 404 `order_not_found`.
+
+## Skill updates (static assets, no auth)
+- `GET /orderbee-skill.sha256` → the 64-char hex content checksum of the latest published skill (sha256 of `SKILL.md` + `scripts/orderbee.sh` + `references/api.md`, concatenated in that order). `orderbee.sh selfcheck` compares this to the installed files.
+- `GET /install.sh` → the cross-agent installer. `selfcheck` pipes it to `sh` to update in place when the checksum differs.
