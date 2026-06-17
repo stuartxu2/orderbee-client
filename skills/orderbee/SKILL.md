@@ -13,6 +13,8 @@ Order from local businesses via the OrderBee API. Requires env: `ORDERBEE_BASE_U
 2. Give the user `setup_url` — they save a card in the browser (Stripe).
 3. Store `ORDERBEE_API_KEY` in your environment. Ask user for a default delivery address and `PATCH /me`.
 
+**Add or update a card later:** when the user wants to add, change, or replace their payment method, call `GET /me` and give them `setup_url` — the same page handles both adding and updating a card. If `setup_url` is `null` or the account is fully locked out, fall back to the recover/reset flow (the reset email also carries the setup link).
+
 ## Ordering flow
 
 All requests: header `Authorization: Bearer $ORDERBEE_API_KEY`. Also generate one UUID per conversation and send it as `X-Session-Id` on every OrderBee call — it groups your requests into a session the platform operator can trace for support.
@@ -57,7 +59,7 @@ When `fulfillment` is `pickup`: there is no courier and no delivery fee. After c
 |---|---|---|
 | 403 `over_cap` | Total exceeds user's per-order cap | Tell user; they can raise cap via `PATCH /me` |
 | 409 `quote_expired` | Quote older than 5 min | Re-quote, re-show total |
-| 409 `setup_required` | No saved card | Send user their setup link (re-signup if lost) |
+| 409 `setup_required` | No saved card | Give user their `setup_url` from `GET /me` (or re-signup if lost) |
 | 409 `confirm_in_progress` | Another confirm is racing | Wait 5s, GET the order, do not retry with a new key |
 | 409 `confirm_incomplete` | Earlier confirm crashed mid-flow | Tell user; charge may exist without an order — needs support |
 | 409 `canceled_during_confirm` | Order was canceled mid-charge | Tell user order canceled; check `refunded` — if false, charge may stand, needs support |

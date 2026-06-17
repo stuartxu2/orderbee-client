@@ -7,7 +7,8 @@ Body: `{"email": "user@example.com"}` → 201 `{"api_key": "ob_...", "setup_url"
 409 `email_exists`. Rate-limited per IP (429 after 5/hour).
 
 ## GET /me
-200 `{"email", "has_payment_method": bool, "default_address": {...}|null, "per_order_cap_cents": 7500}`
+200 `{"email", "has_payment_method": bool, "default_address": {...}|null, "per_order_cap_cents": 7500, "setup_url": "https://.../setup/<token>"|null}`
+`setup_url` opens the Stripe card page — use it to **add or update** a card. `null` only for legacy accounts with no setup token. `PATCH /me` returns the same `setup_url`.
 
 ## PATCH /me
 Body (any subset): `{"per_order_cap_cents": 10000, "default_address": {"street","city","state","zip"}}` → 200 profile. Cap range: 100–50000 cents.
