@@ -20,17 +20,21 @@ Body (any subset): `{"per_order_cap_cents": 10000, "default_address": {"street",
 503 `pos_unavailable` if the restaurant's POS is down.
 
 ## POST /orders/quote
-Body: `{"restaurant_id": "<uuid>", "items": [{"item_id": "bb-classic", "quantity": 2}], "dropoff": {address}?, "fulfillment": "delivery"|"pickup"?}`
+Body: `{"restaurant_id": "<uuid>", "items": [{"item_id": "bb-classic", "quantity": 2}], "dropoff": {address}?, "fulfillment": "delivery"|"pickup"?, "help_fund_bps": 0|250|500|750|1000?}`
 `fulfillment` defaults to `delivery`. For `delivery`, `dropoff` defaults to the user's `default_address` (400 `dropoff_required` if neither set). For `pickup`, no `dropoff` is needed and `delivery_fee_cents` is `0`. Quantity 1–20 per line.
+`help_fund_bps` is the optional **Help-Local Fund** contribution (defaults to `0`): a voluntary, platform-held community fund taken as a % of the food subtotal — `0`/`250`/`500`/`750`/`1000` = 0%/2.5%/5%/7.5%/10%. Any other value → 400 `invalid_body`. It is not a tip and is not paid to the restaurant.
 201:
 ```json
 {
   "id": "<order uuid>", "state": "quoted",
-  "quote": {"subtotal_cents": 2275, "tax_cents": 202, "service_charge_cents": 0, "delivery_fee_cents": 499, "total_cents": 2976},
+  "restaurant": {"name": "Bee's Burgers", "phone": "+14155550100", "address": {"street","city","state","zip"}},
+  "quote": {"subtotal_cents": 2275, "tax_cents": 202, "service_charge_cents": 0, "convenience_fee_cents": 114, "help_local_fund_cents": 0, "delivery_fee_cents": 499, "total_cents": 3090},
   "quote_expires_at": "<iso8601>", "dropoff": {...}, "timeline": [...]
 }
 ```
-For `pickup` orders the response also includes `"pickup": {"code": "A1B2C3D4", "ready_at": null, "address": {...}, "hours": "..."}` and `"dropoff": null`.
+`restaurant` carries the business `name`, `phone` (may be `null`) + `address` so the invoice is self-contained (present on quote, confirm, and `GET /orders/:id`; `null` in the `GET /orders` list).
+`convenience_fee_cents` is a flat 5% platform fee on the subtotal (every order). `help_local_fund_cents` is the contribution chosen via `help_fund_bps` (`0` when skipped). Both are already included in `total_cents`.
+For `pickup` orders the response also includes `"pickup": {"code": "A1B2", "ready_at": null, "address": {...}, "hours": "..."}` and `"dropoff": null`. The `code` is a short 4-character pickup code.
 Pricing comes from the restaurant's POS (Toast `/prices`) plus the courier quote — totals are authoritative; OrderBee never computes food prices itself.
 
 ## POST /orders/:id/confirm

@@ -17,10 +17,14 @@ cmd=${1:-help}; shift || true
 case "$cmd" in
   restaurants) req GET /restaurants | jq ;;
   menu)        req GET "/restaurants/$1/menu" | jq ;;
-  quote)       # quote <restaurant_id> <item_id>:<qty> [<item_id>:<qty> ...]
+  quote)       # quote <restaurant_id> <item_id>:<qty> [<item_id>:<qty> ...] [fund:<bps>]
     rid=$1; shift
-    items=$(printf '%s\n' "$@" | jq -R 'split(":") | {item_id: .[0], quantity: (.[1] // "1" | tonumber)}' | jq -s .)
-    req POST /orders/quote "{\"restaurant_id\":\"$rid\",\"items\":$items}" | jq ;;
+    fund=0; lines=()
+    for a in "$@"; do
+      if [[ $a == fund:* ]]; then fund=${a#fund:}; else lines+=("$a"); fi
+    done
+    items=$(printf '%s\n' "${lines[@]}" | jq -R 'split(":") | {item_id: .[0], quantity: (.[1] // "1" | tonumber)}' | jq -s .)
+    req POST /orders/quote "{\"restaurant_id\":\"$rid\",\"items\":$items,\"help_fund_bps\":$fund}" | jq ;;
   # NOTE: fresh uuid per run — first attempts only; retries must reuse the original key via the API
   confirm)     req POST "/orders/$1/confirm" '' "Idempotency-Key: $(uuidgen)" | jq ;;
   status)      req GET "/orders/$1" | jq '{state, quote, tracking_url, timeline}' ;;
