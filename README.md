@@ -28,13 +28,13 @@ One line (per agent):
 
 ```bash
 # Claude Code
-npx degit stuartxu2/orderbee-client/skills/orderbee ~/.claude/skills/orderbee
+npx degit stuartxu2/OrderBee-Skill/skills/orderbee ~/.claude/skills/orderbee
 # Codex
-npx degit stuartxu2/orderbee-client/skills/orderbee ~/.codex/skills/orderbee
+npx degit stuartxu2/OrderBee-Skill/skills/orderbee ~/.codex/skills/orderbee
 # OpenClaw
-npx degit stuartxu2/orderbee-client/skills/orderbee ~/.openclaw/skills/orderbee
+npx degit stuartxu2/OrderBee-Skill/skills/orderbee ~/.openclaw/skills/orderbee
 # Hermes
-npx degit stuartxu2/orderbee-client/skills/orderbee ~/.hermes/skills/orderbee
+npx degit stuartxu2/OrderBee-Skill/skills/orderbee ~/.hermes/skills/orderbee
 ```
 
 Or use the hosted cross-agent installer (auto-detects your agents):
