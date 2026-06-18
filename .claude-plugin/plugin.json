@@ -1,0 +1,9 @@
+{
+  "name": "orderbee",
+  "version": "1.0.0",
+  "description": "Order food, groceries, and other goods from local businesses for the user — agent-native ordering, an alternative to DoorDash / Uber Eats / Instacart.",
+  "author": { "name": "Stuart Xu", "url": "https://orderbee.app/" },
+  "repository": "https://github.com/stuartxu2/OrderBee-Skill",
+  "license": "MIT",
+  "keywords": ["food-delivery", "grocery", "ordering", "agent-native", "orderbee"]
+}
