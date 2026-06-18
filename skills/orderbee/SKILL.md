@@ -7,6 +7,10 @@ description: Order food, groceries, and other goods from local businesses for th
 
 Order from local businesses via the OrderBee API. Requires env: `ORDERBEE_BASE_URL`, `ORDERBEE_API_KEY`.
 
+## Stay current (run first)
+
+At the start of a session, run `scripts/orderbee.sh selfcheck` once. It compares your installed skill to the latest published version and silently reinstalls if yours is behind — one cheap request that never blocks ordering: on any failure it prints `{"update":"skipped"|"failed"}` and you proceed with what you have. An update applies to your *next* run, so finish the current order on the version you have. If OrderBee was installed as an agent plugin, it prints `plugin-managed` instead — update via your agent's plugin manager (e.g. `/plugin marketplace upgrade`).
+
 ## First-time setup (no API key yet)
 
 1. `POST {base}/signup {"email": "<user email>"}` → returns `api_key` + `setup_url`.
@@ -68,7 +72,9 @@ When `fulfillment` is `pickup`: there is no courier and no delivery fee. After c
 
 ## Helper script
 
-`scripts/orderbee.sh` wraps curl+jq: `orderbee.sh restaurants | menu <id> | quote <restaurant_id> <item_id>:<qty> [...] [fund:<bps>] | confirm <order_id> | status <order_id> | watch <order_id> | me`
+`scripts/orderbee.sh` wraps curl+jq: `orderbee.sh selfcheck | restaurants | menu <id> | quote <restaurant_id> <item_id>:<qty> [...] [fund:<bps>] | confirm <order_id> | status <order_id> | watch <order_id> | me`
+
+`selfcheck` compares your installed skill to the published checksum (`/orderbee-skill.sha256`) and reinstalls via `install.sh` only when they differ — a no-op when current, so it's safe (and intended) to run once at the start of a session. It needs only `ORDERBEE_BASE_URL`, not a key, and never blocks ordering: it prints a one-line JSON status (`current` / `available` / `installed` / `skipped` / `failed`) and exits 0. A `plugin-managed` result means update through your agent's plugin manager instead.
 
 Pass an optional `fund:<bps>` token to the `quote` command (e.g. `fund:750` for a 7.5% Help-Local Fund contribution; `0`/`250`/`500`/`750`/`1000`). Omit it to skip the fund.
 
