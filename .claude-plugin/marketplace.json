@@ -1,0 +1,12 @@
+{
+  "name": "orderbee",
+  "owner": { "name": "Stuart Xu", "url": "https://orderbee.app/" },
+  "plugins": [
+    {
+      "name": "orderbee",
+      "source": "./",
+      "description": "Order food, groceries, and goods from local businesses — live menus, real POS-priced quotes, saved-card checkout, courier delivery or pickup.",
+      "version": "1.0.0"
+    }
+  ]
+}

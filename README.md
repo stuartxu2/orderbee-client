@@ -43,6 +43,15 @@ Or use the hosted cross-agent installer (auto-detects your agents):
 curl -fsSL https://orderbee.app/install.sh | sh
 ```
 
+### Native plugin install (Claude Code)
+
+The same skill is also packaged as a Claude Code plugin, so it installs and auto-updates through the native plugin manager:
+
+```bash
+/plugin marketplace add stuartxu2/OrderBee-Skill
+/plugin install orderbee@orderbee
+```
+
 Then set the environment and ask your agent to order:
 
 ```bash
