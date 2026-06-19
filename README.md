@@ -1,72 +1,83 @@
-# OrderBee Client
+# OrderBee Skill/Plugin
 
-Open integration layer for [OrderBee](https://orderbee.app/) — the AI agent skill for **food and grocery delivery** from local businesses (restaurants, cafés, grocery and convenience stores, pharmacies, dispensaries) with live catalogs, real prices, saved-card checkout, and courier delivery or pickup. Ask your agent to order takeout, a coffee, groceries, or pharmacy items — agent-native ordering, an alternative to apps like DoorDash, Uber Eats, or Instacart.
+Order from local businesses without leaving your AI agent. OrderBee is a `SKILL.md` skill — also packaged as a Claude Code plugin — that lets your assistant order food, coffee, groceries, pharmacy, and convenience items from nearby shops, with live catalogs, real POS prices, saved-card checkout, and courier delivery or pickup. Agent-native ordering, an alternative to DoorDash, Uber Eats, or Instacart.
 
-This repository holds the **public, safe-to-fork parts**: the agent skill and (over time) SDKs, a webhook verifier, an embeddable booking widget, and calendar/import adapters. The OrderBee marketplace core — backend API, Stripe Connect, payouts, dispute and fraud handling, POS/courier adapters, and the merchant dashboard — is **closed** and not in this repo.
+→ https://orderbee.app
 
-## What's here
+## What's in this repo
 
-| Path | What it is | Status |
-|------|------------|--------|
-| `skills/orderbee/` | The OrderBee agent skill: `SKILL.md`, a `curl`+`jq` helper, and the API reference | ✅ Available |
+This is the public, safe-to-fork layer: the agent skill, the Claude Code plugin manifests, and the API reference. The OrderBee marketplace core — backend API, Stripe Connect, payouts, fraud and dispute handling, POS and courier adapters, and the merchant dashboard — is closed and not here.
 
-## Roadmap (open layer)
+| Path | What it is |
+|------|------------|
+| `skills/orderbee/SKILL.md` | The skill definition your agent loads |
+| `skills/orderbee/references/api.md` | OrderBee public API reference |
+| `skills/orderbee/scripts/orderbee.sh` | `curl` + `jq` helper the skill calls |
+| `.claude-plugin/` | Claude Code plugin and marketplace manifests |
 
-These are intended to live here as they land — community contributions welcome:
+## Install
 
-- **API client SDK** (TypeScript / Python) over the public OrderBee API.
-- **Webhook signature verifier** for order-status callbacks.
-- **Embeddable booking button** widget for shop websites.
-- **Calendar / import adapters** (Square, Vagaro, Booksy → OrderBee).
-- **CLI / devtools.**
+### One line, every agent (recommended)
 
-## Install the skill
-
-The skill works in any agent that supports the `SKILL.md` format — Claude Code, Codex, OpenClaw, Hermes — only the directory differs.
-
-One line (per agent):
-
-```bash
-# Claude Code
-npx degit stuartxu2/OrderBee-Skill/skills/orderbee ~/.claude/skills/orderbee
-# Codex
-npx degit stuartxu2/OrderBee-Skill/skills/orderbee ~/.codex/skills/orderbee
-# OpenClaw
-npx degit stuartxu2/OrderBee-Skill/skills/orderbee ~/.openclaw/skills/orderbee
-# Hermes
-npx degit stuartxu2/OrderBee-Skill/skills/orderbee ~/.hermes/skills/orderbee
-```
-
-Or use the hosted cross-agent installer (auto-detects your agents):
+The hosted installer auto-detects your agents and installs into each one it finds — Claude Code, Codex, Copilot CLI, Gemini CLI, OpenClaw, Hermes:
 
 ```bash
 curl -fsSL https://orderbee.app/install.sh | sh
 ```
 
-### Native plugin install (Claude Code)
+Just one agent, or a different one (Pi, Antigravity, the Claude apps, or any `SKILL.md` agent):
 
-The same skill is also packaged as a Claude Code plugin, so it installs and auto-updates through the native plugin manager:
+```bash
+# pick one: claude · codex · copilot · gemini · openclaw · hermes
+curl -fsSL https://orderbee.app/install.sh | sh -s -- --agent codex
+# or any custom skills folder
+curl -fsSL https://orderbee.app/install.sh | sh -s -- --dir ~/path/to/skills
+```
+
+### Claude Code plugin
+
+The same skill ships as a Claude Code plugin, so it installs and auto-updates through the native plugin manager:
 
 ```bash
 /plugin marketplace add stuartxu2/OrderBee-Skill
 /plugin install orderbee@orderbee
 ```
 
-Then set the environment and ask your agent to order:
+### Manual (one agent at a time)
+
+```bash
+npx degit stuartxu2/OrderBee-Skill/skills/orderbee ~/.claude/skills/orderbee
+```
+
+Swap `~/.claude` for `~/.codex`, `~/.copilot`, `~/.gemini`, `~/.openclaw`, or `~/.hermes`.
+
+## Configure
+
+Set two variables, then ask your agent to order:
 
 ```bash
 export ORDERBEE_BASE_URL=https://orderbee.app
-export ORDERBEE_API_KEY=...   # get a key at https://orderbee.app
+export ORDERBEE_API_KEY=sk_...   # get a key at https://orderbee.app
 ```
+
+Then, in plain words:
+
+> Order a large oat-milk latte from the nearest coffee shop.
+
+Your agent reads the live menu, gets a real POS-priced quote, shows you the itemized total, and only charges once you say go.
 
 ## Pricing
 
-OrderBee is free to use. The small convenience fee on each order covers server costs, API tokens, and platform operations — nothing more. No profit margin.
+OrderBee runs as a non-profit, at cost. No markup on item prices — you pay the shop's real POS price. The delivery fee goes to your Uber or DoorDash courier (choose pickup to skip it), and a small convenience fee only covers AI tokens, servers, and daily operations.
 
 ## Status
 
-OrderBee is a sandbox MVP — payments run in Stripe test mode, so no real money is charged.
+Sandbox MVP — payments run in Stripe test mode, so no real money is charged. Toast POS and Uber Direct integrations are built on test credentials; mock adapters run the full order lifecycle end to end.
+
+## For local businesses
+
+Run a shop? Connect your POS and take orders from AI agents and the people who use them — your menu, your prices, no commissions. Onboard at https://orderbee.app.
 
 ## License
 
-[MIT](./LICENSE) — © 2026 Stuart Xu. The skill, SDKs, and tools in this repo are MIT-licensed. The OrderBee hosted service and its core are proprietary.
+[MIT](./LICENSE) — © 2026 Stuart Xu. The skill, plugin, and tools in this repo are MIT-licensed. The OrderBee hosted service and its core are proprietary.
